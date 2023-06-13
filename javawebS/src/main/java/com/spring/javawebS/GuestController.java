@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.spring.javawebS.pagination.PageProcess;
 import com.spring.javawebS.service.GuestService;
 import com.spring.javawebS.vo.GuestVO;
+import com.spring.javawebS.vo.PageVO;
 
 @Controller
 @RequestMapping("/guest")
@@ -22,11 +24,14 @@ public class GuestController {
 	@Autowired
 	GuestService guestService;
 	
+	@Autowired
+	PageProcess pageProcess;
+	
 	@RequestMapping(value = "guestList", method=RequestMethod.GET)
 	public String guestListGet(Model model,
 			@RequestParam(name="pag",defaultValue = "1", required = false) int pag,
 			@RequestParam(name="pageSize",defaultValue = "5", required = false) int pageSize) {
-		
+		/*
 		// page 설정
 		int totRecCnt = guestService.totRecCnt();
 		int totPage = totRecCnt%pageSize == 0 ? totRecCnt/pageSize : (totRecCnt/pageSize) + 1;
@@ -50,6 +55,14 @@ public class GuestController {
 		
 		List<GuestVO> vos =  guestService.getGuestList(startIndexNo,pageSize);
 		model.addAttribute("vos", vos);
+		*/
+		
+		PageVO pageVO  = pageProcess.totRecCnt(pag, pageSize, "guest", "", "");
+		List<GuestVO> vos =  guestService.getGuestList(pageVO.getStartIndexNo(),pageVO.getPageSize());
+		
+		model.addAttribute("pageVO", pageVO);
+		model.addAttribute("vos", vos);
+		
 		return "guest/guestList";
 	}
 	
@@ -69,11 +82,11 @@ public class GuestController {
 		}
 	}
 	
-	@RequestMapping(value = "adminLogin", method=RequestMethod.GET)
+	@RequestMapping(value = "/adminLogin", method=RequestMethod.GET)
 	public String adminLoginGet(Model model) {
 		return "guest/adminLogin";
 	}
-	@RequestMapping(value = "adminLogin", method=RequestMethod.POST)
+	@RequestMapping(value = "/adminLogin", method=RequestMethod.POST)
 	public String adminLoginPost(Model model, HttpServletRequest request,
 			@RequestParam(name="mid",defaultValue = "", required = false) String mid, 
 			@RequestParam(name="pwd",defaultValue = "", required = false) String pwd) {
@@ -88,11 +101,20 @@ public class GuestController {
 		else return "redirect:/message/guestAdminNo";
 
 	}
-	@RequestMapping(value = "adminLogout", method=RequestMethod.GET)
+	@RequestMapping(value = "/adminLogout", method=RequestMethod.GET)
 	public String adminLogoutGet(HttpSession session) {
 		session.invalidate();
 		return "redirect:/message/adminLogout";		
 	}
-
+	
+	//방명록 삭제
+	@RequestMapping(value = "/gusetDelete", method=RequestMethod.GET)
+	public String aguestDeleteGet(@RequestParam(name="idx", defaultValue = "0", required = false) int idx) {
+		int res = guestService.setGuestDelete(idx);
+		
+		if(res ==1) return "redirect:/message/guestDeleteOk";
+		else return "redirect:/message/guestDeleteNo";
+		
+	}
 	
 }

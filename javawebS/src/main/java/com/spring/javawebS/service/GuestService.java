@@ -14,5 +14,7 @@ public interface GuestService {
 
 	public int totRecCnt();
 
+	public int setGuestDelete(int idx);
+
 	
 }

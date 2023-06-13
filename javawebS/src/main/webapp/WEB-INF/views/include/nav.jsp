@@ -5,7 +5,7 @@
 <div class="w3-top">
   <div class="w3-bar w3-black w3-card">
     <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-    <a href="http://192.168.50.20:9090/javawebS" class="w3-bar-item w3-button w3-padding-large">HOME</a>
+    <a href="http://192.168.50.87:9090/javawebS" class="w3-bar-item w3-button w3-padding-large">HOME</a>
     <!-- <a href="http://49.142.157.251:9090/javawebS" class="w3-bar-item w3-button w3-padding-large">HOME</a> -->
     <!-- <a href="${ctp}/" class="w3-bar-item w3-button w3-padding-large">HOME</a> -->
     <a href="${ctp}/guest/guestList" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Guest</a>
@@ -18,6 +18,8 @@
         <a href="${ctp}/study/password/sha256" class="w3-bar-item w3-button">암호화(SHA-256)</a>
         <a href="${ctp}/study/password/aria" class="w3-bar-item w3-button">암호화(ARIA)</a>
         <a href="${ctp}/study/password/bCryptPassword" class="w3-bar-item w3-button">암호화(security)</a>
+        <a href="${ctp}/study/mail/mailForm" class="w3-bar-item w3-button">메일연습</a>
+        <a href="${ctp}/study/uuid/uuidForm" class="w3-bar-item w3-button">uuid연습</a>
       </div>
     </div>
     <c:if test="${empty sLevel}">
