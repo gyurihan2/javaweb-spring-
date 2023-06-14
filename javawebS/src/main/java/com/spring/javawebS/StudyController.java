@@ -3,6 +3,7 @@ package com.spring.javawebS;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -173,4 +174,84 @@ public class StudyController {
 		return uid.toString();
 	}
 	
+	@RequestMapping(value = "/ajax/ajaxForm", method = RequestMethod.GET)
+	public String ajaxFormGet() {
+		
+		return "study/ajax/ajaxForm";
+	}
+	
+	@RequestMapping(value = "/ajax/ajaxTest1", method = RequestMethod.POST,produces = "application/text; charset=utf-8")
+	@ResponseBody
+	public String ajaxTest1Post( int idx) {
+		idx = (int)(Math.random()*idx)+1;
+		return idx+"Have a good time(안녕하세요)";
+	}
+	
+	
+	@RequestMapping(value = "/ajax/ajaxTest2_1", method = RequestMethod.GET)
+	public String ajaxTest2_1Get() {
+		
+		return "study/ajax/ajaxTest2_1Get";
+	}
+	@RequestMapping(value = "/ajax/ajaxTest2_1", method = RequestMethod.POST)
+	@ResponseBody
+	public String[] ajaxTest2_1Post(String dodo) {
+		
+		return studyService.getCityStringArray(dodo);
+	}
+	
+	// 객체 배열(ArrayList) 전달
+	@RequestMapping(value = "/ajax/ajaxTest2_2", method = RequestMethod.GET)
+	public String ajaxTest2_2Get() {
+		
+		return "study/ajax/ajaxTest2_2Get";
+	}
+	@RequestMapping(value = "/ajax/ajaxTest2_2", method = RequestMethod.POST)
+	@ResponseBody
+	public  ArrayList<String> ajaxTest2_2Post(String dodo) {
+		
+		return studyService.getCityArrayList(dodo);
+	}
+	
+	//객체 배열(HashMap) 전달
+	@RequestMapping(value = "/ajax/ajaxTest2_3", method = RequestMethod.GET)
+	public String ajaxTest2_3Get() {
+		
+		return "study/ajax/ajaxTest2_3Get";
+	}
+	@RequestMapping(value = "/ajax/ajaxTest2_3", method = RequestMethod.POST)
+	@ResponseBody
+	public  HashMap<Object, Object> ajaxTest2_3Post(String dodo) {
+		ArrayList<String> vos = new ArrayList<String>();
+		vos = studyService.getCityArrayList(dodo);
+		
+		HashMap<Object, Object> map = new HashMap<>();
+		map.put("city", vos);
+		
+		return map;
+	}
+	
+	//DB를 활용한 값의 전달
+	@RequestMapping(value = "/ajax/ajaxTest3", method = RequestMethod.GET)
+	public String ajaxTest3Get() {
+		
+		return "study/ajax/ajaxTest3";
+	}
+	
+	@RequestMapping(value = "/ajax/ajaxTest3_1", method = RequestMethod.POST)
+	@ResponseBody
+	public MemberVO ajaxTest3_1Post(String name) {
+		
+		return studyService.getMemberMidSearch(name);
+	}
+	
+	//DB(vos)를 활용한 값의 전달
+	
+	
+	@RequestMapping(value = "/ajax/ajaxTest3_2", method = RequestMethod.POST)
+	@ResponseBody
+	public ArrayList<MemberVO> ajaxTest3_2Post(String name) {
+		System.out.println(name);
+		return studyService.getMemberMidSearch2(name);
+	}
 }

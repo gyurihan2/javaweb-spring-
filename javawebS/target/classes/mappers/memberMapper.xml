@@ -6,6 +6,9 @@
 	<select id="getMemberIdCheck" resultType="com.spring.javawebS.vo.MemberVO">
 		select * from member2 where mid=#{mid};
 	</select>
+	<select id="getMemberNameCheck" resultType="com.spring.javawebS.vo.MemberVO">
+		select * from member2 where name=#{name};
+	</select>
 	<select id="getMemberNickCheck" resultType="com.spring.javawebS.vo.MemberVO">
 		select * from member2 where nickName=#{nickName};
 	</select>
@@ -21,6 +24,9 @@
 	<!-- Update -->
 	<update id="setMemberVisitProcess">
 		update member2 set point=point+10, lastDate=now(), visitCnt=visitCnt+1, todayCnt=todayCnt+1 where mid=#{vo.mid};
+	</update>
+	<update id="setMemberPwdUpdate">
+		update member2 set pwd=#{pwd} where mid=#{mid};
 	</update>
 	
 </mapper>

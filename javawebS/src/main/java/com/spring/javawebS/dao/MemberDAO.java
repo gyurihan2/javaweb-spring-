@@ -18,4 +18,8 @@ public interface MemberDAO {
 
 	public ArrayList<MemberVO> getMemberList();
 
+	public void setMemberPwdUpdate(@Param("mid")String mid, @Param("pwd")String pwd);
+
+	public MemberVO getMemberNameCheck(@Param("name")String name);
+
 }

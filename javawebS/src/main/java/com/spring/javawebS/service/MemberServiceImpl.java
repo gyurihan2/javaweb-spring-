@@ -41,4 +41,15 @@ public class MemberServiceImpl implements MemberService {
 		
 		return memberdao.getMemberList();
 	}
+
+	@Override
+	public void setMemberPwdUpdate(String mid, String pwd) {
+		memberdao.setMemberPwdUpdate(mid,pwd);
+	}
+
+	@Override
+	public MemberVO getMemberNameCheck(String name) {
+		// TODO Auto-generated method stub
+		return  memberdao.getMemberNameCheck(name);
+	}
 }

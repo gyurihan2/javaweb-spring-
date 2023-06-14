@@ -90,7 +90,7 @@
 	      		<c:forEach var="vo" items="${vos}" varStatus="st">
 	      			<tr>
 	      				<td>${vo.name}</td>
-	      				<td >${vo.email}</td>
+	      				<td>${vo.email}</td>
 	      				<td><input type="checkbox" name="userMailChk" value="${vo.email}"/></td>
 	      			</tr>
 	      		</c:forEach>

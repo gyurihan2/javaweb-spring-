@@ -15,5 +15,9 @@ public interface MemberService {
 	public void setMemberVisitProcess(MemberVO vo);
 
 	public ArrayList<MemberVO> getMemberList();
+
+	public void setMemberPwdUpdate(String mid, String pwd);
+
+	public MemberVO getMemberNameCheck(String name);
 	
 }

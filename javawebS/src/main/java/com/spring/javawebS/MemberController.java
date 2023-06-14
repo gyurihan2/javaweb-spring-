@@ -1,5 +1,9 @@
 package com.spring.javawebS;
 
+import java.util.UUID;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,6 +11,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +33,9 @@ public class MemberController {
 	MemberService memberService;
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	JavaMailSender mailSender;
 
 	@RequestMapping(value = "/memberLogin", method = RequestMethod.GET)
 	public String memberLoginGet(HttpServletRequest request) { 
@@ -33,7 +43,6 @@ public class MemberController {
 		
 		for(Cookie tmp:cookies){		
 			if(tmp.getName().equals("cMid")) {
-				System.out.println("실행");
 				request.setAttribute("mid", tmp.getValue());
 				break;
 			}
@@ -89,6 +98,13 @@ public class MemberController {
 		}
 	}
 	
+	@RequestMapping(value = "/memberLogout", method = RequestMethod.GET)
+	public String memberLogoutGet(HttpSession session) {
+		String mid = (String) session.getAttribute("sMid");
+		session.invalidate();
+		return "redirect:/message/memberLogout?mid="+mid;
+	}
+	
 	@RequestMapping(value = "/memberJoin", method = RequestMethod.GET)
 	public String memberJoinGet() { 
 		return "member/memberJoin";
@@ -132,4 +148,110 @@ public class MemberController {
 	public String memberMain() {
 		return "member/memberMain";
 	}
+	
+	// 아이디 찾기
+	@RequestMapping(value = "/memberIdFind", method = RequestMethod.GET)
+	public String memberIdFindGet() {
+		return "member/memberIdFind";
+	}
+	// 아이디 찾기
+	@RequestMapping(value = "/memberIdFind", method = RequestMethod.POST)
+	@ResponseBody
+	public String memberIdFindPost(String name, String toMail) {
+		String res="";
+		MemberVO vo =memberService.getMemberNameCheck(name);
+		
+		if(vo != null && vo.getEmail().equals(toMail)) {
+			String tmpMid="";
+			for(int i=0;i<vo.getMid().length();i++) {
+				if(i%2==0) tmpMid = tmpMid.substring(0, i) + "*" + vo.getMid().substring(i + 1);
+			}
+			res=tmpMid;
+		}
+		return res;
+	}
+	// 비밀번호 찾기
+	@RequestMapping(value = "/memberPwdFind", method = RequestMethod.GET)
+	public String memberPwdFindGet() {
+		return "member/memberPwdFind";
+	}
+	@RequestMapping(value = "/memberPwdFind", method = RequestMethod.POST)
+	public String memberPwdFindPost(String mid, String toMail, HttpServletRequest request) throws MessagingException {
+		MemberVO vo =  memberService.getMemberIdCheck(mid);
+		
+		if(vo ==null) {
+			return "redirect:/message/memberIdChkNo";
+		}
+		else if(!vo.getEmail().equals(toMail)) {
+			return "redirect:/message/memberEmailChkNo";
+		}
+		else {
+			UUID uid = UUID.randomUUID();
+			String pwd = uid.toString().substring(0,8);
+			
+			// 발급 받은 임시 비밀번호를 암호화 처리 시켜서 DB에 저장 한다.
+			memberService.setMemberPwdUpdate(mid,passwordEncoder.encode(pwd));
+			
+			// 저장된 임시 비밀번호를 메일 전송 처리한다.
+			String content = pwd;
+			int res = mailSend(toMail,content);
+			
+			// 회원이 임시 비밀번호를 변경 처리할 수있도록 유도하기위해 임시세션 생성
+			HttpSession session = request.getSession();
+			session.setAttribute("sImsiPwd", "ok");
+			
+			if(res == 1) return "redirect:/message/memberImsiPwdOk";
+			else return "redirect:/message/memberImsiPwdNo";
+		}
+		
+	}
+	
+	// 임시 비밀번호를 메일로 전송 처리한다.
+	private int mailSend(String toMail, String content) throws MessagingException {
+		String title = "임시 비밀번호를 발급하였습니다.";
+		
+		// 메일 전송을 위한 객체: MimeMessage(), MimeMessageHelper()
+		MimeMessage message =  mailSender.createMimeMessage();
+		
+		//보관함
+		MimeMessageHelper messageHelper = new MimeMessageHelper(message, true , "UTF-8");
+		
+		//메일 보관함에 회원이 보내온 메시지들의 정보를 모두 저장시킨 후 작업 
+		messageHelper.setTo(toMail.split(";"));
+		
+		messageHelper.setSubject(title);
+		
+		//메시지 보관함의 내용(content)에 필요한 정보를 추가로 담아서 전송 시킬수 있도록 한다.
+		
+		content += "<br><hr><h3>임시 비밀번호는 <font color='red'>"+content+"<font/></h3><hr><br>";
+		
+		// cid 예약어
+		content += "<p><img src=\"cid:main.jpg\" width='500px'></p>";
+		content += "<p>방문하기 :<a href='http://49.142.157.251:9090/javaweb14J/MainHomepage.mem'>영화보는날</a> </p>";
+		content += "<hr>";
+		
+		messageHelper.setText(content, true);
+		
+		// 이미지 경로를 별도로 표시시켜준다. 그다음 다시 보관함에 담아준다.
+		FileSystemResource file = new FileSystemResource("C:\\Users\\green\\git\\javaweb-spring-\\javawebS\\src\\main\\webapp\\resources\\images\\main.jpg");
+		messageHelper.addInline("main.jpg", file);
+
+		
+		//메일 전송하기
+		mailSender.send(message);
+		
+		return 1;
+	}
+	
+	@RequestMapping(value = "/memberPwdUpdate", method = RequestMethod.GET)
+	public String memberPwdUpdateGet() {
+		return "member/memberPwdUpdte";
+	}
+	@RequestMapping(value = "/memberPwdUpdate", method = RequestMethod.POST)
+	public String memberPwdUpdatePost(String mid, String pwd,HttpSession session) {
+		memberService.setMemberPwdUpdate(mid,passwordEncoder.encode(pwd));
+		session.removeAttribute("sImsiPwd");
+		return "redirect:/message/memberPwdUpdateOk";
+	}
+
 }

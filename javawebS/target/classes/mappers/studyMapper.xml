@@ -3,7 +3,12 @@
 <mapper namespace="com.spring.javawebS.dao.StudyDAO">
 
 	<!-- Select -->
-	
+	<select id="getMemberMidSearch" resultType="com.spring.javawebS.vo.MemberVO">
+		select * from member2 where name=#{name};
+	</select>
+	<select id="getMemberMidSearch2" resultType="com.spring.javawebS.vo.MemberVO">
+		select * from member2 where name like concat('%',#{name},'%') order by name;
+	</select>
 	
 	<!-- Insert -->
 	
