@@ -28,6 +28,9 @@
   		<hr/>
   	</c:if>
   </div>
+  <p>회원 사진 :
+    <img src="${ctp}/resources/data/member/${vo.photo}" width="150px"/>
+  </p>
 </div>
 <p><br/></P>
 <jsp:include page="/WEB-INF/views/include/footer.jsp"/>

@@ -27,6 +27,7 @@
 	      <button class="w3-padding-large w3-button" title="More">Study 2<i class="fa fa-caret-down"></i></button>     
 	      <div class="w3-dropdown-content w3-bar-block w3-card-4">
 	        <a href="${ctp}/study/ajax/ajaxForm" class="w3-bar-item w3-button">AJAX연습</a>
+	        <a href="${ctp}/study/fileUpload/fileUploadForm" class="w3-bar-item w3-button">파일 업로드</a>
 	      </div>
 	    </div>
 	    <div class="w3-dropdown-hover w3-hide-small">
@@ -34,6 +35,7 @@
 	      <div class="w3-dropdown-content w3-bar-block w3-card-4">
 	        <a href="${ctp}/member/meberList" class="w3-bar-item w3-button">회원 List</a>
 	        <a href="${ctp}/member/memberPwdUpdate" class="w3-bar-item w3-button">비밀번호 변경</a>
+	        <a href="${ctp}/member/memberPwdChk" class="w3-bar-item w3-button">비밀번호 확인</a>
 	        <a href="${ctp}/member/memberUpdate" class="w3-bar-item w3-button">정보 수정</a>
 	        <a href="javascript:memberDelete()" class="w3-bar-item w3-button">회원 탈퇴</a>
 	        <c:if test="${sLevel==0}">
@@ -52,6 +54,20 @@
     <a href="javascript:void(0)" class="w3-padding-large w3-hover-red w3-hide-small w3-right"><i class="fa fa-search"></i></a>
   </div>
 </div>
+
+<!-- 회원 탈퇴  -->
+<script>
+	function memberDelete(){
+		let ans = confirm("탈퇴하시겠습니까?");
+		if(ans){
+			ans = confirm("탈퇴할경우 30일간 같은 아이디로 회원가입이 불가합니다.\n")
+			if(ans){
+				location.href="${ctp}/member/memberDeleteOk";
+			}
+		}
+	}
+</script>
+
 
 <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
 <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">

@@ -1,5 +1,8 @@
 package com.spring.javawebS;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
@@ -8,7 +11,9 @@ import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -19,7 +24,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javawebS.common.ARIAUtil;
 import com.spring.javawebS.common.SecurityUtil;
@@ -247,11 +254,101 @@ public class StudyController {
 	
 	//DB(vos)를 활용한 값의 전달
 	
-	
 	@RequestMapping(value = "/ajax/ajaxTest3_2", method = RequestMethod.POST)
 	@ResponseBody
 	public ArrayList<MemberVO> ajaxTest3_2Post(String name) {
 		System.out.println(name);
 		return studyService.getMemberMidSearch2(name);
 	}
+	
+	// 파일 업로드폼
+	@RequestMapping(value = "/fileUpload/fileUploadForm", method = RequestMethod.GET)
+	public String fileUploadGet(Model model,HttpServletRequest request) {
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/study");
+		
+		
+		
+		String[] files = new File(realPath).list();
+		
+		model.addAttribute("files",files);
+		
+		return "study/fileUpload/fileUploadForm";
+	}
+	// 파일 업로드 처리
+	@RequestMapping(value = "/fileUpload/fileUploadForm", method = RequestMethod.POST)
+	public String fileUploadPost(MultipartFile fName, String mid) {
+		//System.out.println("fName: " + fName.getOriginalFilename());
+		//System.out.println("mid: " + mid);
+		
+		int res = studyService.fileUpload(fName, mid);
+		
+		if(res == 1) return "redirect:/message/filUploadOk";
+		else return "redirect:/message/filUploadNo";
+		
+	}
+	
+	@RequestMapping(value = "/fileUpload/fileDelete", method = RequestMethod.POST)
+	@ResponseBody
+	public String fileDeletePost(HttpServletRequest request,
+			@RequestParam(name="fName",defaultValue = "",required = false) String fName) {
+		
+		String res ="0";
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/study/");
+		
+		File file = new File(realPath+fName);
+		
+		if(file.exists()) {
+			if(file.delete()) res = "1";
+		}
+		
+		return res;
+	}
+	
+	
+	// 파일 다운로드 메소드
+	@RequestMapping(value = "/fileUpload/fileDownAction", method = RequestMethod.GET)
+	public void fileDownActionGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String fName = request.getParameter("fName");
+		
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/study/");
+		
+		File file = new File(realPath+fName);
+		
+		// 다운로드 파일을 윈도우 형식으로
+		String downFileName =  new String(fName.getBytes("UTF-8"),"8859_1");
+		// 헤더에 추가
+		response.setHeader("Content-Disposition", "attachment:fileName="+downFileName);
+		
+		
+		FileInputStream fis = new FileInputStream(file);
+		ServletOutputStream sos = response.getOutputStream();
+		
+		byte[] buffer = new byte[2048];
+		int data = 0;
+		
+		while((data = fis.read(buffer,0,buffer.length)) != -1) {
+			sos.write(buffer,0,data);
+		}
+		
+		sos.flush();
+		sos.close();
+		fis.close();
+		
+		//return "study/fileUpload/fileUploadForm";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

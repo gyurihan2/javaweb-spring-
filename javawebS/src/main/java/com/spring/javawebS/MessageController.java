@@ -106,6 +106,39 @@ public class MessageController {
 			model.addAttribute("msg","비밀번호 변경 완료.");
 			model.addAttribute("url","/member/memberMain");
 		}
+		else if(msgFlag.equals("filUploadOk")) {
+			model.addAttribute("msg","파일 업로드 되었습니다.");
+			model.addAttribute("url","/study/fileUpload/fileUploadForm");
+		}
+		else if(msgFlag.equals("filUploadNo")) {
+			model.addAttribute("msg","파일 업로드 실패.");
+			model.addAttribute("url","/study/fileUpload/fileUploadForm");
+		}
+		else if(msgFlag.equals("memberPwdchkNo")) {
+			model.addAttribute("msg","회원 정보를 확인하세여.");
+			model.addAttribute("url","/study/member/memberPwdCheck");
+		}
+		else if(msgFlag.equals("memberNickCheckNo")) {
+			model.addAttribute("msg","닉네임을 확인하세여.");
+			model.addAttribute("url","/member/memberUpdate");
+		}
+		else if(msgFlag.equals("memberUpdateOk")) {
+			model.addAttribute("msg","회원정보가 수정 되었습니다..");
+			model.addAttribute("url","/member/memberMain");
+		}
+		else if(msgFlag.equals("memberUpdateOk")) {
+			model.addAttribute("msg","회원정보가 수정 실패.");
+			model.addAttribute("url","/member/memberUpdate");
+		}
+		else if(msgFlag.equals("memberDelUpdateOk")) {
+			model.addAttribute("msg","회원 탈퇴 완료.");
+			model.addAttribute("url","/member/memberLogin");
+		}
+		else if(msgFlag.equals("memberDelUpdateNo")) {
+			model.addAttribute("msg","회원 탈퇴 실패.");
+			model.addAttribute("url","/member/memberMain");
+		}
+		
 		
 		
 		return "include/message";

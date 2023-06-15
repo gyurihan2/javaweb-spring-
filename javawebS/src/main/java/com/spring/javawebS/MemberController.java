@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,10 +16,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javawebS.service.MemberService;
 import com.spring.javawebS.vo.MemberVO;
@@ -104,13 +105,15 @@ public class MemberController {
 		session.invalidate();
 		return "redirect:/message/memberLogout?mid="+mid;
 	}
-	
+	// 회원 가입 폼
 	@RequestMapping(value = "/memberJoin", method = RequestMethod.GET)
 	public String memberJoinGet() { 
 		return "member/memberJoin";
 	}
+	// 회원 가입 철
 	@RequestMapping(value = "/memberJoin", method = RequestMethod.POST)
-	public String memberJoinPost(MemberVO vo) { 
+	public String memberJoinPost(MultipartFile fName, MemberVO vo) { 
+		
 		// 아이디 중복 체크
 		if(memberService.getMemberIdCheck(vo.getMid()) != null) return "redirect:/message/idCheckNo";
 		// 닉네임 중복 체크
@@ -118,10 +121,12 @@ public class MemberController {
 		
 		//비밀번호 암호화
 		vo.setPwd(passwordEncoder.encode(vo.getPwd()));
+		
 		// 사진 파일 업로드가 되었다면 사진 파일을 서버 파일시스템에 저장 시켜준다.
 		
+		
 		// 체크가 완료되면 VO에 담긴 자룔를 DB에 저장시겨준다
-		int res = memberService.setMemberJoinOk(vo);
+		int res = memberService.setMemberJoinOk(vo, fName);
 		
 		return "redirect:/message/memberJoinOk";
 	}
@@ -145,7 +150,12 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value = "/memberMain", method = RequestMethod.GET)
-	public String memberMain() {
+	public String memberMain(Model model, HttpSession session) {
+		String mid = (String) session.getAttribute("sMid");
+		MemberVO vo = memberService.getMemberIdCheck(mid);
+		
+		model.addAttribute("vo", vo);
+		
 		return "member/memberMain";
 	}
 	
@@ -253,5 +263,63 @@ public class MemberController {
 		session.removeAttribute("sImsiPwd");
 		return "redirect:/message/memberPwdUpdateOk";
 	}
-
+	
+	@RequestMapping(value = "/memberPwdChk", method = RequestMethod.GET)
+	public String memberPwdChkGet() {
+		return "member/memberPwdChk";
+	}
+	@RequestMapping(value = "/memberPwdChk", method = RequestMethod.POST)
+	public String memberPwdChkPost(String mid, String pwd,Model model) {
+		MemberVO vo = memberService.getMemberIdCheck(mid);
+		if(vo != null && passwordEncoder.matches(pwd, vo.getPwd())) {
+			model.addAttribute("vo", vo);
+			return "member/memberUpdate";
+		}
+		else{
+			return "redirect:/message/memberPwdchkNo";
+		}
+	}
+	
+	@RequestMapping(value = "/memberUpdate", method = RequestMethod.GET)
+	public String memberUpdateGet(Model model, HttpSession session) {
+		String mid = (String)session.getAttribute("sMid");
+		MemberVO vo = memberService.getMemberIdCheck(mid);
+		model.addAttribute("vo",vo);
+		return "member/memberUpdate";
+	}
+	
+	@RequestMapping(value = "/memberUpdateOk",method = RequestMethod.POST)
+	public String memberUpdateOkPost(MemberVO vo,MultipartFile fName, HttpSession session) {
+		// 닉네임 체크
+		String nickName = (String)session.getAttribute("sNickName");
+		
+		if(memberService.getMemberNickCheck(vo.getNickName()) != null && !nickName.equals(vo.getNickName())) {
+			return "redirect:/message/memberNickCheckNo";
+		}
+		
+		int res = memberService.setMemberUpdateOk(fName, vo);
+		
+		if(res == 1) {
+			session.setAttribute("sNickName", vo.getNickName());
+			return "redirect:/message/memberUpdateOk";
+		}
+		else {
+			return "redirect:/message/memberUpdateOk";
+		}
+	}
+	
+	// 회원 탈퇴
+	@RequestMapping(value = "memberDeleteOk",method = RequestMethod.GET)
+	public String memberDeleteOkGet(HttpSession session) {
+		String mid = (String)session.getAttribute("sMid");
+		
+		int res = memberService.setMemberDelUpdateOk(mid);
+		if(res == 1) {
+			session.invalidate();
+			return "redirect:/message/memberDelUpdateOk";
+		}
+		else {
+				return "redirect:/message/memberDelUpdateNo";
+		}
+	}
 }

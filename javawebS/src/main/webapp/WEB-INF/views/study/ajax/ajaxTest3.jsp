@@ -53,7 +53,7 @@
   		
   		$.ajax({
   			type:"post",
-  			url:"${ctp}/study/ajax/ajaxTest3_2z",
+  			url:"${ctp}/study/ajax/ajaxTest3_2",
   			data:{name:name},
   			success:function(vos){
   				let str="";

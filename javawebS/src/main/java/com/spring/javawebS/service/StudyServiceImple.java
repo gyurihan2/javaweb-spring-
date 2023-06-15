@@ -1,9 +1,18 @@
 package com.spring.javawebS.service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javawebS.dao.StudyDAO;
 import com.spring.javawebS.vo.MemberVO;
@@ -133,5 +142,46 @@ public class StudyServiceImple implements StudyService {
 	public ArrayList<MemberVO> getMemberMidSearch2(String name) {
 		
 		return studyDAO.getMemberMidSearch2(name);
+	}
+
+	@Override
+	public int fileUpload(MultipartFile fName, String mid) {
+		int res = 0;
+		
+		// 메모리 올라와 있는 파일의 정보를 실제 서버 파일 시스템에 저장 처리한다.(spring 은 output만 하면됨 / jsp in out 다 해야됨)
+		// 예외 처리를 위해 메소드 생성
+		
+		
+		try {
+			writeFile(fName);
+			res=1;
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+
+		return res;
+	}
+
+	public void writeFile(MultipartFile fName) throws IOException {
+		byte[] data = fName.getBytes();
+		
+		 LocalDate now = LocalDate.now();
+     // 포맷 정의
+     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
+
+     // 포맷 적용
+     String formatedNow = now.format(formatter);
+
+     // 결과 출력
+    
+		
+		HttpServletRequest request =((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/study/");
+		FileOutputStream fos = new FileOutputStream(realPath+formatedNow+"_"+fName.getOriginalFilename());
+		
+		fos.write(data);
+		fos.close();
 	}
 }
