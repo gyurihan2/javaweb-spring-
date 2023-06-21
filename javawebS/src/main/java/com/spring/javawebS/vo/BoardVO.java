@@ -29,5 +29,7 @@ public class BoardVO {
 	
 	//댓글의 수
 	private int replyCount;
+	
+	
 
 }

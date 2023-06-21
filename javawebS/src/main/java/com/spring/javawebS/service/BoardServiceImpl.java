@@ -16,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.spring.javawebS.dao.BoardDAO;
+import com.spring.javawebS.vo.BoardReplyVO;
 import com.spring.javawebS.vo.BoardVO;
 
 @Service
@@ -78,7 +79,10 @@ public class BoardServiceImpl implements BoardService {
 			
 			byte[] bytes = new byte[2048];
 			int cnt=0;
-			while((cnt = fis.read()) != -1) fos.write(bytes,0,cnt);
+			while((cnt = fis.read(bytes)) != -1) {
+			
+				fos.write(bytes,0,cnt);
+			}
 			
 			fos.flush();
 			fos.close();
@@ -110,14 +114,126 @@ public class BoardServiceImpl implements BoardService {
 		return boardDAO.getPrevNext(idx);
 	}
 
+
 	@Override
 	public int setBoardGood(String mid, int idx) {
 		// 해당 게시물의 좋아요 상태 확인
 		BoardVO boardGood = boardDAO.getBoardGoodStatus(mid,idx);
-		
-		
 		return 0;
 	}
 
+	@Override
+	public List<BoardVO> getBoardListSearch(int startIndexNo, int pageSize, String search, String searchString) {
+		return boardDAO.getBoardListSearch(startIndexNo,pageSize,search,searchString);
+	}
 
+	@Override
+	public void imgDelete(String content) {
+		if(content.indexOf("src=\"/") == -1) return;
+		
+		HttpServletRequest request =((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
+		
+		int position=21;
+		String nextImg = content.substring(content.indexOf("src=\"/")+position);
+		System.out.println(nextImg);
+		boolean sw=true;
+		while(sw) {
+			String imgFile = nextImg.substring(0,nextImg.indexOf("\""));
+			
+			
+			String origFilePath = realPath+"board/"+imgFile;
+			
+			fileDelte(origFilePath);
+		
+			if(nextImg.indexOf("src=\"/") == -1) sw=false;
+			
+			else nextImg = nextImg.substring(nextImg.indexOf("src=\"/")+position);
+			
+		}
+	}
+
+	// 서버에 저장된 사진 이미지 삭제
+	public void fileDelte(String origFilePath) {
+		File file = new File(origFilePath);
+		if(file.exists()) file.delete();
+	}
+
+	@Override
+	public int setBoardDelete(int idx) {
+		
+		return boardDAO.setBoardDelete(idx);
+	}
+
+	@Override
+	public void imgCheckUpdate(String content) {
+		if(content.indexOf("src=\"/") == -1) return;
+		
+		HttpServletRequest request =((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
+		
+		int position=21;
+		String nextImg = content.substring(content.indexOf("src=\"/")+position);
+		
+		boolean sw=true;
+		while(sw) {
+			String imgFile = nextImg.substring(0,nextImg.indexOf("\""));
+			
+			String origFilePath = realPath+"board/"+imgFile;
+			String copyFilePath = realPath+"ckeditor/"+imgFile;
+			System.out.println("origFilePath:" +origFilePath);
+			System.out.println("copyFilePath:" +copyFilePath);
+			//ckeditor 파일을 board폴더로 복사
+			fileCopyCheck(origFilePath,copyFilePath);
+			
+			if(nextImg.indexOf("src=\"/") == -1) sw=false;
+			
+			else nextImg = nextImg.substring(nextImg.indexOf("src=\"/")+position);
+			
+		}
+		
+	}
+
+	@Override
+	public int setBoardUpdate(BoardVO vo) {
+		
+		return  boardDAO.setBoardUpdate(vo);
+	}
+
+	@Override
+	public String getMaxGroupId(int boardIdx) {
+		
+		return boardDAO.getMaxGroupId(boardIdx);
+	}
+
+	@Override
+	public void setBoardReplyInput(BoardReplyVO replyVO) {
+		boardDAO.setBoardReplyInput(replyVO);
+	}
+
+	@Override
+	public List<BoardReplyVO> setBoardReply(int idx) {
+		return boardDAO.setBoardReply(idx);
+	}
+
+	@Override
+	public void setBoardReplyDelete(int replyIdx,int level,int groupId, int boardIdx) {
+	boardDAO.setBoardReplyDelete(replyIdx,level,groupId,boardIdx);
+		
+	}
+
+	@Override
+	public BoardReplyVO getBoardReplyIdx(int replyIdx) {
+	
+		return boardDAO.getBoardReplyIdx(replyIdx);
+	}
+
+	@Override
+	public void setBoardReplyUpdate(int idx, String content, String hostIp) {
+		boardDAO.setBoardReplyUpdate(idx,content,hostIp);
+		
+	}
+
+	
+	
 }

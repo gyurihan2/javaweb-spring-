@@ -18,5 +18,8 @@ public class PageVO {
 	private int curBlock;
 	private int lastBlock;
 	
-	private String part;
+	
+	
+	//게시판 검색
+	private String part,search,searchString;
 }

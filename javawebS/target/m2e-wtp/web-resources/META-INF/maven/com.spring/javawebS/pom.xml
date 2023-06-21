@@ -126,6 +126,16 @@
 			 <version>1.18.24</version>
 			 <scope>provided</scope>
 		</dependency>
+		
+		<!-- Validator Backend 데이터 검증 라이브러리-->
+		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator</artifactId>
+		    <version>6.2.0.Final</version>
+		</dependency>
+
+		
 			
 		<!-- DB 작업을 위한 DI(4개) -->
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->

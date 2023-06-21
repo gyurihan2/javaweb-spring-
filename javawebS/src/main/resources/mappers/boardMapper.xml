@@ -19,6 +19,26 @@
 			(select idx from board2 where <![CDATA[idx>#{idx}]]>  limit 1)
 		)
 	</select>
+	<select id="totRecCntSearch" resultType="com.spring.javawebS.vo.BoardVO">
+		select count(*) from board2 where ${search} like concat('%',#{searchString},'%');
+	</select>
+	<select id="getBoardListSearch" resultType="com.spring.javawebS.vo.BoardVO">
+		 select * from board2 where ${search} like concat('%',#{searchString},'%') order by idx desc limit #{startIndexNo},#{pageSize};
+		<!-- select * from board2 where ${search} like concat('%',#{searchString},'%') limit #{startIndexNo},#{pageSize}; -->
+	</select> 
+	
+	<!-- (그룹 아이디의 최대값 확인) -->
+	<select id="getMaxGroupId" resultType="String">
+		select max(groupId) from board2Reply where boardIdx = #{boardIdx};
+	</select>
+	
+	<select id="setBoardReply" resultType="com.spring.javawebS.vo.BoardReplyVO">
+		select * from board2Reply where boardIdx=#{idx} order by groupId, idx;
+	</select>
+	
+	<select id="getBoardReplyIdx" resultType="com.spring.javawebS.vo.BoardReplyVO">
+		select * from board2Reply where idx=#{replyIdx};
+	</select>
 	
 	
 	
@@ -27,13 +47,35 @@
 		insert into board2 values(default,#{vo.mid},#{vo.nickName},#{vo.title},#{vo.email},#{vo.homePage},#{vo.content},default,#{vo.hostIp},#{vo.openSw},default,default)
 	</insert>
 	
+	<insert id="setBoardReplyInput">
+		insert into board2Reply values (default,#{replyVO.boardIdx},#{replyVO.mid},#{replyVO.nickName},default,#{replyVO.hostIp},#{replyVO.content},#{replyVO.groupId},#{replyVO.level})
+	</insert>
+	
 	
 	<!-- Update -->
 	<update id="setBoardReadNum">
 		update board2 set readNum = readNum+1 where idx=#{idx};
 	</update>
 	
+	<update id="setBoardUpdate">
+		update board2 set title=#{vo.title}, email=#{vo.email},homePage=#{vo.homePage},content=#{vo.content},hostIp=#{vo.hostIp},openSw=#{vo.openSw},wDate=now() where idx=#{vo.idx};
+	</update>
 	
-	<!-- Delete -->
+	<update id="setBoardReplyUpdate">
+		update board2Reply set content=#{content}, hostIp=#{hostIp} where idx=#{idx};
+	</update>
 	
+	<!-- Delete <![CDATA[idx<#{idx}]]>-->
+	<delete id="setBoardDelete">
+		delete from board2 where idx=#{idx};
+	</delete>
+	
+	<delete id="setBoardReplyDelete">
+		<if test="level >= 1">
+			delete from board2Reply where idx=#{replyIdx};
+		</if>
+		<if test="level lt 1">
+			delete from board2Reply where boardIdx=#{boardIdx} and groupId=#{groupId};
+		</if>
+	</delete>
 </mapper>

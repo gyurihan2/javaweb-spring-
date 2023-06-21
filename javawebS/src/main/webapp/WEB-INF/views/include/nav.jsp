@@ -28,6 +28,7 @@
 	      <div class="w3-dropdown-content w3-bar-block w3-card-4">
 	        <a href="${ctp}/study/ajax/ajaxForm" class="w3-bar-item w3-button">AJAX연습</a>
 	        <a href="${ctp}/study/fileUpload/fileUploadForm" class="w3-bar-item w3-button">파일 업로드</a>
+	        <a href="${ctp}/study/validator/validatorList" class="w3-bar-item w3-button">Validator 연습</a>
 	      </div>
 	    </div>
 	    <div class="w3-dropdown-hover w3-hide-small">

@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -22,6 +23,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +38,7 @@ import com.spring.javawebS.service.MemberService;
 import com.spring.javawebS.service.StudyService;
 import com.spring.javawebS.vo.MailVO;
 import com.spring.javawebS.vo.MemberVO;
+import com.spring.javawebS.vo.UserVO;
 
 @Controller
 @RequestMapping("/study")
@@ -337,18 +342,51 @@ public class StudyController {
 		//return "study/fileUpload/fileUploadForm";
 	}
 	
+	// validator를 이용한 Backend 유효성 검사
+	@RequestMapping(value = "/validator/validatorForm", method = RequestMethod.GET)
+	public String validatorFormGet() {
+		return "study/validator/validatorForm";
+	}
 	
+	// validator를 이용한 Backend 유효성 검사하기 - 자료 검사후 DB에 저장하기
+	@RequestMapping(value = "/validator/validatorForm", method = RequestMethod.POST)
+	public String validatorFormPost(
+			@Validated UserVO vo, BindingResult bindingResult) {
+			System.out.println("vo:" + vo.toString());
+		
+		if(bindingResult.hasFieldErrors()) { //hasFieldErrors() true : 오류 확인
+			List<ObjectError> list = bindingResult.getAllErrors();
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			System.out.println(list);
+			for(ObjectError e : list) {
+				System.out.println("메시지 : " + e.getDefaultMessage());
+			}
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			System.out.println("error: " + bindingResult.hasErrors());
+			return "redirect:/message/validatorNo";
+		}
+		
+		int res = studyService.setUserInput(vo);
+		
+		if(res == 1 ) return "redirect:/message/userInputOk";
+		else return "redirect:/message/userInputNo";
+	}
 	
+	// validator를 이용한 Backend 유효성 검사
+	@RequestMapping(value = "/validator/validatorList", method = RequestMethod.GET)
+	public String validatorListGet(Model model) {
+		ArrayList<UserVO> vos = studyService.getUserList();
+		model.addAttribute("vos", vos);
+		
+		return "study/validator/validatorList";
+	}
+	// validator 유저 삭제
+	@RequestMapping(value = "/validator/validatorDelete2", method = RequestMethod.GET)
+	public String validatorDeleteGet(int idx) {
 	
+		studyService.setUserDelete(idx);
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		return "redirect:/message/validatorDeleteOk";
+	}
 	
 }

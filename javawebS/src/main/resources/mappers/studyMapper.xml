@@ -9,7 +9,18 @@
 	<select id="getMemberMidSearch2" resultType="com.spring.javawebS.vo.MemberVO">
 		select * from member2 where name like concat('%',#{name},'%') order by name;
 	</select>
+	<select id="getUserList" resultType="com.spring.javawebS.vo.UserVO">
+		select * from user order by name;
+	</select>
 	
 	<!-- Insert -->
+	<insert id="setUserInput">
+		insert into user values(default,#{vo.mid},#{vo.name},#{vo.age},#{vo.address});
+	</insert>
 	
+	
+	<!-- Delete -->
+	<delete id="setUserDelete">
+		delete from user where idx=#{idx};
+	</delete>
 </mapper>

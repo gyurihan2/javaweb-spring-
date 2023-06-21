@@ -22,7 +22,13 @@ public class PageProcess {
 		int totRecCnt = 0;
 		
 		if(section.equals("guest")) totRecCnt = guestDAO.totRecCnt();
-		else if(section.equals("board")) totRecCnt = boardDAO.totRecCnt();
+		else if(section.equals("board")) {
+			if(part.equals("")) totRecCnt = boardDAO.totRecCnt();
+			else {
+				String search =part;
+				totRecCnt =boardDAO.totRecCntSearch(search,searchString);
+			}
+		}
 		//else if(section.equals("board")) totRecCnt = memberDAO.totRecCnt();
 		
 		
@@ -47,6 +53,8 @@ public class PageProcess {
 		pageVO.setBlockSize(blockSize);
 		pageVO.setLastBlock(lastBlock);
 		pageVO.setPart(part);
+		pageVO.setSearchString(searchString);
+		pageVO.setSearch(part);
 		
 		return pageVO;
 	}
