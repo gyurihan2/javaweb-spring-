@@ -18,9 +18,11 @@
 	<resources mapping="/css/**" location="/resources/css/" />
 	<resources mapping="/font/**" location="/resources/font/" />
 	<resources mapping="/images/**" location="/resources/images/" />
+	<resources mapping="/data/qrCode/*" location="/resources/data/qrCode/" />
 	<resources mapping="/data/**" location="/resources/data/ckeditor/" />
 	<resources mapping="/member/**" location="/resources/data/member/" />
 	<resources mapping="/board/**" location="/resources/data/board/" />
+	<resources mapping="/pds/**" location="/resources/data/pds/" />
 	<resources mapping="/pds/**" location="/resources/data/pds/" />
 	
 	<resources mapping="/ckeditor/**" location="/resources/ckeditor/" />

@@ -1,12 +1,18 @@
 package com.spring.javawebS.service;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +21,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageConfig;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.spring.javawebS.dao.StudyDAO;
 import com.spring.javawebS.vo.KakaoAddressVO;
 import com.spring.javawebS.vo.MemberVO;
+import com.spring.javawebS.vo.QrCodeVO;
 import com.spring.javawebS.vo.UserVO;
 
 @Service
@@ -228,7 +241,179 @@ public class StudyServiceImple implements StudyService {
 		
 		 studyDAO.setKakaoAddressDelete(address);
 	}
-	
-	
+
+	@Override
+	public String qrCreate(QrCodeVO vo, String realPath) {
+		// 네이밍 -> 날짜_아이디_성명_메일주소_랜덤번호2자리
+		String qrCodeName = "";
+		String qrCodeName2 = "";
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
+		
+		UUID uid = UUID.randomUUID();
+		String strUid = uid.toString().substring(0,2);
+		
+		qrCodeName = sdf.format(new Date())+"_"+vo.getMid()+"_"+vo.getName()+"_"+vo.getEmail()+"_"+strUid;
+		qrCodeName2 = sdf.format(new Date())+"\n"+vo.getMid()+"\n"+vo.getName()+"\n"+vo.getEmail()+"\n"+strUid;
+		
+		
+		try {
+			File file = new File(realPath);
+			if(!file.exists()) file.mkdirs();
+			
+			//String name = new String(vo.getName().getBytes("UTF-8"),"ISO-8859-1");
+			qrCodeName2 = new String(qrCodeName2.getBytes("UTF-8"),"ISO-8859-1");
+			
+			// qr코드 만들기
+			int qrCodeColor = 0xFF000000; // QR CODE 글자색 -> 검정
+			int qrCodeBackColor = 0xFFFFFFFF; // QR CODE 배경색 -> 흰색
+			
+			QRCodeWriter qrCodeWriter = new QRCodeWriter(); // QR Code 객체 생성
+			
+			//BitMatrix bitMatrix = qrCodeWriter.encode(name, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeName2, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			
+			MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrCodeColor,qrCodeBackColor); 
+			
+			BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix,matrixToImageConfig);
+			
+			// ImageIO객체를 이용하면 byte 배열 단위로 변환 없이 파일을 write 시킬수 있다
+			ImageIO.write(bufferedImage, "png", new File(realPath+"/"+qrCodeName+".png"));
+			
+		}catch (IOException e) {
+			e.printStackTrace();
+		} catch (WriterException e) {
+			e.printStackTrace();
+		}
+		
+		return qrCodeName;
+	}
+
+	@Override
+	public String qrCreate2(QrCodeVO vo, String realPath) {
+		String qrCodeName = "";
+
+		qrCodeName = vo.getMoveUrl();
+		
+		
+		try {
+			File file = new File(realPath);
+			if(!file.exists()) file.mkdirs();
+			
+			qrCodeName = new String(qrCodeName.getBytes("UTF-8"),"ISO-8859-1");
+			
+			// qr코드 만들기
+			int qrCodeColor = 0xFF000000; // QR CODE 글자색 -> 검정
+			int qrCodeBackColor = 0xFFFFFFFF; // QR CODE 배경색 -> 흰색
+			
+			QRCodeWriter qrCodeWriter = new QRCodeWriter(); // QR Code 객체 생성
+			
+			//BitMatrix bitMatrix = qrCodeWriter.encode(name, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeName, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			
+			MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrCodeColor,qrCodeBackColor); 
+			
+			BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix,matrixToImageConfig);
+			
+			// ImageIO객체를 이용하면 byte 배열 단위로 변환 없이 파일을 write 시킬수 있다
+			ImageIO.write(bufferedImage, "png", new File(realPath+"/"+qrCodeName+".png"));
+			
+		}catch (IOException e) {
+			e.printStackTrace();
+		} catch (WriterException e) {
+			e.printStackTrace();
+		}
+		
+		return qrCodeName;
+	}
+
+	@Override
+	public String qrCreate3(QrCodeVO vo, String realPath) {
+		String qrCodeName = "";
+
+		try {
+			File file = new File(realPath);
+			if(!file.exists()) file.mkdirs();
+			
+			qrCodeName = new String(vo.getMovieTemp().getBytes("UTF-8"),"ISO-8859-1");
+			
+			// qr코드 만들기
+			int qrCodeColor = 0xFF000000; // QR CODE 글자색 -> 검정
+			int qrCodeBackColor = 0xFFFFFFFF; // QR CODE 배경색 -> 흰색
+			
+			QRCodeWriter qrCodeWriter = new QRCodeWriter(); // QR Code 객체 생성
+			
+			//BitMatrix bitMatrix = qrCodeWriter.encode(name, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeName, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			
+			MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrCodeColor,qrCodeBackColor); 
+			
+			BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix,matrixToImageConfig);
+			
+			// ImageIO객체를 이용하면 byte 배열 단위로 변환 없이 파일을 write 시킬수 있다
+			ImageIO.write(bufferedImage, "png", new File(realPath+"/"+qrCodeName+".png"));
+			
+		}catch (IOException e) {
+			e.printStackTrace();
+		} catch (WriterException e) {
+			e.printStackTrace();
+		}
+		
+		return qrCodeName;
+	}
+
+	@Override
+	public String qrCreate4(QrCodeVO vo, String realPath) {
+		// QR 코드명은 ...
+		String qrCodeName = "";
+
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			
+			UUID uid = UUID.randomUUID();
+			String strUid = uid.toString().substring(0,4);
+			
+			qrCodeName = sdf.format(new Date()) + "_" + strUid;
+			
+			File file = new File(realPath);
+			if(!file.exists()) file.mkdirs();
+			
+			String qrTemp = new String(vo.getMovieTemp().getBytes("UTF-8"),"ISO-8859-1");
+			
+			// qr코드 만들기
+			int qrCodeColor = 0xFF000000; // QR CODE 글자색 -> 검정
+			int qrCodeBackColor = 0xFFFFFFFF; // QR CODE 배경색 -> 흰색
+			
+			QRCodeWriter qrCodeWriter = new QRCodeWriter(); // QR Code 객체 생성
+			
+			BitMatrix bitMatrix = qrCodeWriter.encode(qrTemp, BarcodeFormat.QR_CODE, 200, 200); // QR코드 크기
+			
+			MatrixToImageConfig matrixToImageConfig = new MatrixToImageConfig(qrCodeColor,qrCodeBackColor); 
+			
+			BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix,matrixToImageConfig);
+			
+			// ImageIO객체를 이용하면 byte 배열 단위로 변환 없이 파일을 write 시킬수 있다
+			ImageIO.write(bufferedImage, "png", new File(realPath+"/"+qrCodeName+".png"));
+			
+			// 생성된 QR 코드 정보를 DB에 저장
+			vo.setQrCodeName(qrCodeName+".png");
+			studyDAO.setQrCreateDB(vo);
+			
+			
+		}catch (IOException e) {
+			e.printStackTrace();
+		} catch (WriterException e) {
+			e.printStackTrace();
+		}
+		
+		return qrCodeName;
+	}
+
+	@Override
+	public QrCodeVO getQrCodeSearch(String qrCode) {
+		
+		return studyDAO.getQrCodeSearch(qrCode);
+	}
+
 	
 }

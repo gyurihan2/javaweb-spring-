@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javawebS.vo.KakaoAddressVO;
 import com.spring.javawebS.vo.MemberVO;
+import com.spring.javawebS.vo.QrCodeVO;
 import com.spring.javawebS.vo.UserVO;
 
 public interface StudyService {
@@ -34,5 +35,15 @@ public interface StudyService {
 	public List<KakaoAddressVO> getKakaoAddressList();
 
 	public void setKakaoAddressDelete(String address);
+
+	public String qrCreate(QrCodeVO vo, String realPath);
+
+	public String qrCreate2(QrCodeVO vo, String realPath);
+
+	public String qrCreate3(QrCodeVO vo, String realPath);
+
+	public String qrCreate4(QrCodeVO vo, String realPath);
+
+	public QrCodeVO getQrCodeSearch(String qrCode);
 
 }

@@ -12,11 +12,17 @@
 	<select id="getUserList" resultType="com.spring.javawebS.vo.UserVO">
 		select * from user order by name;
 	</select>
+	<select id="getQrCodeSearch" resultType="com.spring.javawebS.vo.QrCodeVO">
+		select * from qrCode where qrCodeName =#{qrCode}
+	</select>
 
 	
 	<!-- Insert -->
 	<insert id="setUserInput">
 		insert into user values(default,#{vo.mid},#{vo.name},#{vo.age},#{vo.address});
+	</insert>
+	<insert id="setQrCreateDB">
+		insert into qrCode values(default,#{vo.mid},#{vo.name},#{vo.email},#{vo.movieName},#{vo.movieDate},#{vo.movieTime},#{vo.publishNow},#{vo.movieAdult},#{vo.movieChild},#{vo.qrCodeName});
 	</insert>
 	
 	

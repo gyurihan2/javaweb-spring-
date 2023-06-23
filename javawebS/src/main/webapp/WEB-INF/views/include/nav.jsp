@@ -30,6 +30,8 @@
 	        <a href="${ctp}/study/fileUpload/fileUploadForm" class="w3-bar-item w3-button">파일 업로드</a>
 	        <a href="${ctp}/study/validator/validatorList" class="w3-bar-item w3-button">Validator 연습</a>
 	        <a href="${ctp}/study/kakaomap/kakaomap" class="w3-bar-item w3-button">Kakao Map</a>
+	        <a href="${ctp}/study/qrCode/qrCodeForm" class="w3-bar-item w3-button">QR Code</a>
+	        <a href="${ctp}/study/captcha/captchaForm" class="w3-bar-item w3-button">Chatcha 인증</a>
 	      </div>
 	    </div>
 	    <div class="w3-dropdown-hover w3-hide-small">
