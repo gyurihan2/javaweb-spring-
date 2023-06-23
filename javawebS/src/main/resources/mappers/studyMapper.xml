@@ -12,6 +12,7 @@
 	<select id="getUserList" resultType="com.spring.javawebS.vo.UserVO">
 		select * from user order by name;
 	</select>
+
 	
 	<!-- Insert -->
 	<insert id="setUserInput">

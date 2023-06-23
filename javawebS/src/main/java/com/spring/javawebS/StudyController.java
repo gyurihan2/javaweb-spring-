@@ -36,6 +36,7 @@ import com.spring.javawebS.common.ARIAUtil;
 import com.spring.javawebS.common.SecurityUtil;
 import com.spring.javawebS.service.MemberService;
 import com.spring.javawebS.service.StudyService;
+import com.spring.javawebS.vo.KakaoAddressVO;
 import com.spring.javawebS.vo.MailVO;
 import com.spring.javawebS.vo.MemberVO;
 import com.spring.javawebS.vo.UserVO;
@@ -388,5 +389,87 @@ public class StudyController {
 	
 		return "redirect:/message/validatorDeleteOk";
 	}
+	
+	// 카카오 맵 폼
+	@RequestMapping(value = "/kakaomap/kakaomap", method = RequestMethod.GET)
+	public String kakaomapGet() {
+		return "study/kakaomap/kakaomap";
+	}
+	// 카카오 맵 마커 표시하기(클릭 시)
+	@RequestMapping(value = "/kakaomap/kakaoEx1", method = RequestMethod.GET)
+	public String kakaoEx1Get() {
+		return "study/kakaomap/kakaoEx1";
+	}
+	// 카카오 맵 마커 표시하기 DB 저장
+	@RequestMapping(value = "/kakaomap/kakaoEx1", method = RequestMethod.POST)
+	@ResponseBody
+	public String kakaoEx1Post(KakaoAddressVO vo) {
+		System.out.println(vo.toString());
+		KakaoAddressVO searchVO = studyService.getKakaoAddressName(vo.getAddress());
+		
+		if(searchVO != null) return "0";
+		
+		studyService.setKakaoAddressInput(vo);
+		
+		return "1";
+	}
+	
+	//DB에 저장된 지명 검색하기 폼
+	@RequestMapping(value = "/kakaomap/kakaoEx2", method = RequestMethod.GET)
+	public String kakaoEx2Get(Model model,
+			@RequestParam(name="address",defaultValue = "그린컴퓨터",required = false) String address) {
+		KakaoAddressVO vo = studyService.getKakaoAddressName(address);
+		
+		List<KakaoAddressVO> vos = studyService.getKakaoAddressList();
+		
+		
+		model.addAttribute("vo", vo);
+		model.addAttribute("address", address);
+		model.addAttribute("vos", vos);
+		
+		return "study/kakaomap/kakaoEx2";
+	}
+	
+	//DB에 저장된 지명 삭제하기 
+	@RequestMapping(value = "/kakaomap/kakaoAddressDelete", method = RequestMethod.POST)
+	@ResponseBody
+	public String kakaoAddressDeletePost(String address) {
+		studyService.setKakaoAddressDelete(address);
+		
+		return "1";
+	}
+	
+	//카카오 DB에 저장된 지명을 검색 후 내 DB에 저장
+	@RequestMapping(value = "/kakaomap/kakaoEx3", method = RequestMethod.GET)
+	public String kakaoEx3Get(Model model,
+			@RequestParam(name="address",defaultValue = "청주시청",required = false) String address) {
+		
+		model.addAttribute("address", address);
+		
+		return "study/kakaomap/kakaoEx3";
+	}
+	
+	//
+	@RequestMapping(value = "/kakaomap/kakaoEx4", method = RequestMethod.GET)
+	public String kakaoEx4Get(Model model,
+			@RequestParam(name="address",defaultValue = "청주시청",required = false) String address) {
+		
+		model.addAttribute("address", address);
+		
+		return "study/kakaomap/kakaoEx4";
+	}
+	
+	//
+	@RequestMapping(value = "/kakaomap/kakaoEx5", method = RequestMethod.GET)
+	public String kakaoEx5Get(Model model,
+			@RequestParam(name="address",defaultValue = "청주시청",required = false) String address) {
+		
+		model.addAttribute("address", address);
+		
+		return "study/kakaomap/kakaoEx5";
+	}
+	
+	
+	
 	
 }

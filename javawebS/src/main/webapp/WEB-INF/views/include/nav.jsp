@@ -11,7 +11,7 @@
     <a href="${ctp}/guest/guestList" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Guest</a>
     <c:if test="${sLevel <= 3 }">
 	    <a href="${ctp}/board/boardList" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Board</a>
-	    <a href="#" class="w3-bar-item w3-button w3-padding-large w3-hide-small">PDS</a>
+	    <a href="${ctp}/pds/pdsList" class="w3-bar-item w3-button w3-padding-large w3-hide-small">PDS</a>
 	    
 	    <div class="w3-dropdown-hover w3-hide-small">
 	      <button class="w3-padding-large w3-button" title="More">Study 1<i class="fa fa-caret-down"></i></button>     
@@ -29,6 +29,7 @@
 	        <a href="${ctp}/study/ajax/ajaxForm" class="w3-bar-item w3-button">AJAX연습</a>
 	        <a href="${ctp}/study/fileUpload/fileUploadForm" class="w3-bar-item w3-button">파일 업로드</a>
 	        <a href="${ctp}/study/validator/validatorList" class="w3-bar-item w3-button">Validator 연습</a>
+	        <a href="${ctp}/study/kakaomap/kakaomap" class="w3-bar-item w3-button">Kakao Map</a>
 	      </div>
 	    </div>
 	    <div class="w3-dropdown-hover w3-hide-small">
